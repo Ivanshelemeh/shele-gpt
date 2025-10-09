@@ -8,6 +8,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=ragdb
       - PGPASSWORD=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
     logging:
       options:
         max-size: 10m
@@ -22,16 +23,6 @@ services:
       interval: 2s
       timeout: 20s
       retries: 10
-  pgadmin:
-    container_name: pgadmin_container
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-    volumes:
-      - ./servers.json:/pgadmin4/servers.json
-    ports:
-      - "${PGADMIN_PORT:-5050}:80"
 
   ollama:
     image: ollama/ollama

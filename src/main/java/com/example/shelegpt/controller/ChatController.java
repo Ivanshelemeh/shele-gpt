@@ -41,6 +41,7 @@ public class ChatController {
 
     @PostMapping("/chat/{chatId}/delete")
     public String deleteChat(@PathVariable Long chatId) {
+        chatService.deleteChatById(chatId);
         return MAIN_PAGE;
     }
 

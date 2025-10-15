@@ -5,13 +5,15 @@ import com.example.shelegpt.entity.ChatEntry;
 import com.example.shelegpt.entity.Role;
 import com.example.shelegpt.repo.ChatRepository;
 import com.example.shelegpt.service.ChatService;
+import lombok.SneakyThrows;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.Objects;
@@ -56,7 +58,7 @@ public class ChatServiceImpl implements ChatService {
         if (Objects.isNull(chatId)) {
             throw new IllegalArgumentException("Chat id must be set ");
         }
-        chatRepository.deleteById(chatId);
+        chatRepository.removeChatById(chatId);
     }
 
     @Override
@@ -64,6 +66,34 @@ public class ChatServiceImpl implements ChatService {
         myProxy.addChatEntry(chatId, promt, Role.USER);
         final var answer = chatClient.prompt().user(promt).call().content();
         myProxy.addChatEntry(chatId, answer, Role.ASSISTANT);
+    }
+
+    @Override
+    public SseEmitter proccesStreamingLLM(Long chatId, String userPromt) {
+        myProxy.addChatEntry(chatId, userPromt, Role.USER);
+        StringBuilder answer = new StringBuilder();
+        final var emitter = new SseEmitter(0L);
+        chatClient.prompt(userPromt)
+                  .stream()
+                  .chatResponse()
+                  .subscribe(
+                          response -> processToken(response, emitter, answer),
+                          emitter::completeWithError,
+                          () -> myProxy.addChatEntry(
+                                  chatId,
+                                  answer.toString(), Role.ASSISTANT
+                          )
+                  );
+
+
+        return emitter;
+    }
+
+    @SneakyThrows
+    private static void processToken(ChatResponse response, SseEmitter sseEmitter, StringBuilder answer) {
+        var token = response.getResult().getOutput();
+        sseEmitter.send(token);
+        answer.append(token.getText());
     }
 
     @Transactional

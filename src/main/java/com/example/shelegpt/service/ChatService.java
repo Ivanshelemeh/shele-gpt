@@ -1,7 +1,7 @@
 package com.example.shelegpt.service;
 
 import com.example.shelegpt.entity.ChatEntity;
-import com.example.shelegpt.entity.Role;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -16,4 +16,6 @@ public interface ChatService {
     void deleteChatById(Long chatId);
 
     void proceedInteractionLLM(Long chatId, String promt);
+
+    SseEmitter proccesStreamingLLM(Long chatId, String userPromt);
 }

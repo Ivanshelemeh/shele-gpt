@@ -11,4 +11,5 @@ public interface ChatRepository extends JpaRepository<ChatEntity, Long> {
     @Query("DELETE FROM ChatEntity c WHERE c.id =: chatId  ")
     @Modifying
     void removeChatById(@Param("chatId") Long chatId);
+
 }

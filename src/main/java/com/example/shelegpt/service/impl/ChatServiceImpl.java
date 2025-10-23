@@ -7,6 +7,8 @@ import com.example.shelegpt.repo.ChatRepository;
 import com.example.shelegpt.service.ChatService;
 import lombok.SneakyThrows;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -74,15 +76,12 @@ public class ChatServiceImpl implements ChatService {
         StringBuilder answer = new StringBuilder();
         final var emitter = new SseEmitter(0L);
         chatClient.prompt(userPromt)
+                  .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, chatId))
                   .stream()
                   .chatResponse()
                   .subscribe(
                           response -> processToken(response, emitter, answer),
-                          emitter::completeWithError,
-                          () -> myProxy.addChatEntry(
-                                  chatId,
-                                  answer.toString(), Role.ASSISTANT
-                          )
+                          emitter::completeWithError
                   );
 
 

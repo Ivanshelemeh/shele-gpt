@@ -18,7 +18,7 @@ import static com.example.shelegpt.entity.ChatEntry.toChatEntry;
 public class PostgresChatMemory implements ChatMemory {
 
 
-    private  ChatRepository chatRepository;
+    private ChatRepository chatRepository;
     private int maxMessages;
 
 
@@ -26,7 +26,8 @@ public class PostgresChatMemory implements ChatMemory {
     @Transactional
     public void add(@NonNull String conversationId, List<Message> messages) {
         ChatEntity chat = chatRepository.findById(Long.valueOf(conversationId)).
-                                        orElseThrow(()-> new IllegalArgumentException("not found any chat within" + conversationId));
+                                        orElseThrow(() -> new IllegalArgumentException("not found any chat within" +
+                                                                                       conversationId));
         for (Message message : messages) {
             chat.addChatEntry(toChatEntry(message));
         }
@@ -36,9 +37,10 @@ public class PostgresChatMemory implements ChatMemory {
     @Override
     public List<Message> get(@NonNull String conversationId) {
         ChatEntity chat = chatRepository.findById(Long.valueOf(conversationId)).orElseThrow();
+        int messageSkip = Math.max(0, chat.getHistory().size() - maxMessages);
         return chat.getHistory()
-                .stream()
-                   .sorted(Comparator.comparing(ChatEntry::getCreatedAt).reversed())
+                   .stream()
+                   .skip(messageSkip)
                    .map(ChatEntry::toMessage)
                    .limit(maxMessages)
                    .toList();
@@ -47,6 +49,6 @@ public class PostgresChatMemory implements ChatMemory {
 
     @Override
     public void clear(@NonNull String conversationId) {
-      // not impl
+        // not impl
     }
 }

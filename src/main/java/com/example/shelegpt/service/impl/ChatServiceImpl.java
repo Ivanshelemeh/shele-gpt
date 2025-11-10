@@ -66,7 +66,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void proceedInteractionLLM(@NonNull Long chatId, @NonNull String promt) {
         myProxy.addChatEntry(chatId, promt, Role.USER);
-        final var answer = chatClient.prompt().user(promt).call().content();
+        var answer = chatClient.prompt().user(promt).call().content();
         myProxy.addChatEntry(chatId, answer, Role.ASSISTANT);
     }
 
@@ -81,7 +81,8 @@ public class ChatServiceImpl implements ChatService {
                   .chatResponse()
                   .subscribe(
                           response -> processToken(response, emitter, answer),
-                          emitter::completeWithError
+                          emitter::completeWithError,
+                          emitter::complete
                   );
 
 

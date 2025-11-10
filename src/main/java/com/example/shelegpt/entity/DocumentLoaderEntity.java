@@ -2,8 +2,6 @@ package com.example.shelegpt.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,20 +15,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.ai.chat.messages.Message;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "chat_entry")
+@Table(name = "document-loader")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
-public class ChatEntry {
+@Builder
+public class DocumentLoaderEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,24 +36,18 @@ public class ChatEntry {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(name = "content")
-    private String content;
+    @Column(name = "filename")
+    private String filename;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @Column(name = "content_hash")
+    private String contentHash;
+
+    @Column(name = "document-type")
+    private String documentType;
+
+    @Column(name = "chunk_count")
+    private Integer chunkCount;
 
     @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    public static ChatEntry toChatEntry(Message message) {
-        return ChatEntry.builder()
-                        .role(Role.getRole(message.getMessageType().getValue()))
-                        .content(message.getText())
-                        .build();
-    }
-
-    public Message toMessage() {
-        return role.getMessage(content);
-
-    }
+    private LocalDateTime loadedAt;
 }

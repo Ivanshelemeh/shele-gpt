@@ -18,6 +18,7 @@ public class StreamChatController {
     @GetMapping(value = "/chat-stream/{chatId}",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamTalkToLLM(@PathVariable Long chatId, @RequestParam String userPromt) {
        SseEmitter emitter = chatService.proccesStreamingLLM(chatId,userPromt);
+       return emitter;
 
     }
 }

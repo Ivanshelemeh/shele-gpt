@@ -26,10 +26,12 @@ public class ChatServiceImpl implements ChatService {
     private static final String SORTED_FIELD = "createdAt";
     private final ChatRepository chatRepository;
     private final ChatClient chatClient;
+    private final McpService mcpService;
 
-    public ChatServiceImpl(ChatRepository chatRepository, ChatClient chatClient) {
+    public ChatServiceImpl(ChatRepository chatRepository, ChatClient chatClient, McpService mcpService) {
         this.chatRepository = chatRepository;
         this.chatClient = chatClient;
+        this.mcpService = mcpService;
     }
 
     @Autowired
@@ -66,7 +68,8 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void proceedInteractionLLM(@NonNull Long chatId, @NonNull String promt) {
         myProxy.addChatEntry(chatId, promt, Role.USER);
-        var answer = chatClient.prompt().user(promt).call().content();
+        var answer = mcpService.chatMcp(Objects.requireNonNull(chatClient.prompt()
+                                                                         .user(promt).call().content()));
         myProxy.addChatEntry(chatId, answer, Role.ASSISTANT);
     }
 

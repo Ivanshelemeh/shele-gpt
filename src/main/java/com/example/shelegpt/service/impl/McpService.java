@@ -30,7 +30,8 @@ public class McpService {
     private final Map<String, Pattern> toolPatterns = Map.of(
             "filesystem", Pattern.compile("(?i)(файл|file|read|write|создай|открой|директор)"),
             "postgres", Pattern.compile("(?i)(sql|query|таблиц|database|бд|запрос|select)"),
-            "github", Pattern.compile("(?i)(github|repo|commit|pull|issue|pr)")
+            "github", Pattern.compile("(?i)(github|repo|commit|pull|issue|pr)"),
+            "excalidraw",Pattern.compile("(?i)(node)")
     );
 
     public String chatMcp(@NonNull String inputMessage) {

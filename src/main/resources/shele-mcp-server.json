@@ -27,6 +27,13 @@
       "env": {
         "GITHUB_TOKEN": "${GITHUB_TOKEN}"
       }
+    },
+    "excalidraw": {
+      "command": "node",
+      "args": [
+        "/path/to/excalidraw-mcp-app/dist/index.js",
+        "--stdio"
+      ]
     }
   }
 }

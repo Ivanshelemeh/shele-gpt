@@ -9,7 +9,6 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
 
 import static com.example.shelegpt.entity.ChatEntry.toChatEntry;

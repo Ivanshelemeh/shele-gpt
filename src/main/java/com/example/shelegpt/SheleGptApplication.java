@@ -1,7 +1,13 @@
 package com.example.shelegpt;
 
+import com.example.shelegpt.mcp.tool.SheleTool;
 import com.example.shelegpt.repo.ChatRepository;
 import com.example.shelegpt.service.impl.PostgresChatMemory;
+import org.springaicommunity.agent.tools.FileSystemTools;
+import org.springaicommunity.agent.tools.GlobTool;
+import org.springaicommunity.agent.tools.GrepTool;
+import org.springaicommunity.agent.tools.ShellTools;
+import org.springaicommunity.agent.tools.SkillsTool;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
@@ -14,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import java.util.List;
 
 @SpringBootApplication
 public class SheleGptApplication {
@@ -35,6 +43,17 @@ public class SheleGptApplication {
         return builder.defaultAdvisors(
                               getHistoryAdvisor(),
                               getRagAdvisor())
+                .defaultToolCallbacks(SkillsTool.builder()
+                        .addSkillsDirectories(List.of(".claude/skills"))
+                                                .build())
+                .defaultTools(
+                        FileSystemTools.builder().build(),
+                        GlobTool.builder().build(),
+                        ShellTools.builder().build(),
+                        GrepTool.builder().build(),
+                        SheleTool.builder().build()
+
+                )
                       .build();
     }
 

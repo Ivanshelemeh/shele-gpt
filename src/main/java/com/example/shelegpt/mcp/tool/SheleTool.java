@@ -1,6 +1,7 @@
 package com.example.shelegpt.mcp.tool;
 
 import io.modelcontextprotocol.spec.McpSchema;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springaicommunity.mcp.annotation.McpTool;
 import org.springaicommunity.mcp.annotation.McpToolParam;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
 
 @Component
 @Slf4j
+@Builder
 public class SheleTool {
 
     @McpTool(name = "shele-tool-chat", description = "You can use this tool for  chat with shele")
